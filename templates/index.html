@@ -17,18 +17,14 @@
 
     <script>
       require([
-        
-        
-        
           "esri/Map",
           "esri/views/MapView",
           "esri/layers/FeatureLayer",
-          "dojo/domReady!",
-
-        ], function(Map, MapView, FeatureLayer) {
+          "dojo/domReady!"
+        ], function(Map, MapView, FeatureLayer, MapNotesLayer) {
 
         var map = new Map({
-          basemap: "satellite"
+          basemap: "topo-vector"
         });
 
         var view = new MapView({
@@ -37,12 +33,52 @@
           center: [-118.71511,34.09042],
           zoom: 11
         });
-          // Trailheads point feature layer
-       var featureLayer = new FeatureLayer({
-         url: "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Trailheads/FeatureServer"
-     });
 
-  map.add(featureLayer);
+        var featureLayer = new FeatureLayer({
+          url: "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Trailheads/FeatureServer"
+        });
+        map.add(featureLayer);
+
+        //Change location symbols to images
+        var trailheadsRenderer = {
+          "type": "simple",
+          "symbol": {
+            "type": "picture-marker",
+            "url": "http://static.arcgis.com/images/Symbols/NPS/npsPictograph_0231b.png",
+            "width": 10.5,
+            "height": 10.5
+          }
+        }
+
+        //Change location symbols to simple dots with inner color and outline color
+        var citiesRenderer = {
+          type: "simple",  // autocasts as new SimpleRenderer()
+          symbol: {
+            type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
+            size: 6,
+            color: "black",
+            outline: {  // autocasts as new SimpleLineSymbol()
+              width: 0.5,
+              color: "white"
+            }
+          }
+        };
+
+        //Modify the popup contents here. {Field_Name} should correspond to columns in the dataset
+        var popupTrailheads = {
+          "title": "Trailhead",
+          "content": "<b>Trail:</b> {TRL_NAME}<br><b>City:</b> {CITY_JUR}<br><b>Cross Street:</b> {X_STREET}<br><b>Parking:</b> {PARKING}<br><b>Elevation:</b> {ELEV_FT} ft"
+        }
+
+        //url to dataset on arcgis
+        var trailheads = new FeatureLayer({
+          url: "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Trailheads/FeatureServer/0",
+          renderer: citiesRenderer,
+          popupTemplate: popupTrailheads
+        });
+
+        map.add(trailheads);
+
       });
     </script>
   </head>
