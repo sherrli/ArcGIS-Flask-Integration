@@ -34,14 +34,22 @@ def userlocation():
     if not os.environ.get("TWILIO_ACCOUNT_SID"):
         raise RuntimeError("ACCOUNT_SID not set")
     account_sid=os.environ.get("TWILIO_ACCOUNT_SID")
+    
+    if not os.environ.get("twilio_from"):
+        raise RuntimeError("from number not set")
+    twilio_from=os.environ.get("twilio_from")
+    
+    if not os.environ.get("TWILIO_ACCOUNT_SID"):
+        raise RuntimeError("to number not set")
+    to_num=os.environ.get("to_num")
 
     client = Client(account_sid, auth_token)
     
     message = client.messages \
         .create(
              body='This is the ship that made the Kessel Run in fourteen parsecs?',
-             from_='+18313461499',
-             to='+13106307046'
+             from_=twilio_from,
+             to=to_num
          )
     
     print(message.sid)
